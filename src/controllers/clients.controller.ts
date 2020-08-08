@@ -1,18 +1,10 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository';
+import { Filter, FilterExcludingWhere, repository } from '@loopback/repository';
 import {
   post,
   param,
   get,
   getModelSchemaRef,
   patch,
-  put,
   del,
   requestBody,
 } from '@loopback/rest';
@@ -49,18 +41,6 @@ export class ClientsController {
     return this.clientRepository.create(client);
   }
 
-  @get('/clients/count', {
-    responses: {
-      '200': {
-        description: 'Client model count',
-        content: { 'application/json': { schema: CountSchema } },
-      },
-    },
-  })
-  async count(@param.where(Client) where?: Where<Client>): Promise<Count> {
-    return this.clientRepository.count(where);
-  }
-
   @get('/clients', {
     responses: {
       '200': {
@@ -78,28 +58,6 @@ export class ClientsController {
   })
   async find(@param.filter(Client) filter?: Filter<Client>): Promise<Client[]> {
     return this.clientRepository.find(filter);
-  }
-
-  @patch('/clients', {
-    responses: {
-      '200': {
-        description: 'Client PATCH success count',
-        content: { 'application/json': { schema: CountSchema } },
-      },
-    },
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Client, { partial: true }),
-        },
-      },
-    })
-    client: Client,
-    @param.where(Client) where?: Where<Client>,
-  ): Promise<Count> {
-    return this.clientRepository.updateAll(client, where);
   }
 
   @get('/clients/{id}', {
@@ -141,20 +99,6 @@ export class ClientsController {
     client: Client,
   ): Promise<void> {
     await this.clientRepository.updateById(id, client);
-  }
-
-  @put('/clients/{id}', {
-    responses: {
-      '204': {
-        description: 'Client PUT success',
-      },
-    },
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() client: Client,
-  ): Promise<void> {
-    await this.clientRepository.replaceById(id, client);
   }
 
   @del('/clients/{id}', {
