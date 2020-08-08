@@ -1,5 +1,5 @@
 {
-  "name": "udon-api",
+  "name": "@nittc-computerclub/udon-api",
   "version": "1.0.0",
   "description": "Web APIs backend for Udon.",
   "keywords": [
