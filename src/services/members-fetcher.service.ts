@@ -10,7 +10,8 @@ export interface MembersFetcherService {
   getMembers(): Promise<Member[]>;
 }
 
-export class MembersFetcherServiceProvider implements Provider<MembersFetcherService> {
+export class MembersFetcherServiceProvider
+  implements Provider<MembersFetcherService> {
   constructor(
     // members_db must match the name property in the datasource json file
     @inject('datasources.members_db')

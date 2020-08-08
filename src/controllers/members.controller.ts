@@ -55,7 +55,7 @@ export class MembersController {
         },
       },
       '404': {
-        'description': 'No member with the ID found',
+        description: 'No member with the ID found',
       },
     },
   })
