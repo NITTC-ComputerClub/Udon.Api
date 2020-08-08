@@ -1,4 +1,4 @@
-import {ApplicationConfig, UdonApiApplication} from './application';
+import { ApplicationConfig, UdonApiApplication } from './application';
 
 export * from './application';
 
