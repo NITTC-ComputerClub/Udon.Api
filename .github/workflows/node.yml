@@ -18,6 +18,15 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
+
+      - uses: mirromutth/mysql-action@v1.1
+        with:
+          character set server: 'utf8mb4'
+          collation server: 'utf8mb4_unicode_ci'
+          mysql database: 'udon'
+          mysql user: 'udon'
+          mysql password: 'udon'
+
       - run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.PACKAGES_TOKEN }}" >> ~/.npmrc
       - run: npm ci
       - run: npm run build --if-present
