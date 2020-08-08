@@ -23,6 +23,7 @@ jobs:
         with:
           character set server: 'utf8mb4'
           collation server: 'utf8mb4_unicode_ci'
+          mysql version: '5.7'
           mysql database: 'udon'
           mysql user: 'udon'
           mysql password: 'udon'
