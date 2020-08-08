@@ -1,11 +1,23 @@
 import { inject, lifeCycleObserver, LifeCycleObserver } from '@loopback/core';
 import { juggler } from '@loopback/repository';
 
+const baseUrl = 'https://members-db.azurewebsites.net/';
 const config = {
   name: 'members_db',
   connector: 'rest',
-  baseURL: 'https://members-db.azurewebsites.net/',
+  baseURL: baseUrl,
   crud: false,
+  operations: [
+    {
+      template: {
+        method: 'GET',
+        url: baseUrl,
+      },
+      functions: {
+        getMembers: [],
+      },
+    },
+  ],
 };
 
 // Observe application's life cycle to disconnect the datasource when
