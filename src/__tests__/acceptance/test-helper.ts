@@ -1,4 +1,4 @@
-import {UdonApiApplication} from '../..';
+import { UdonApiApplication } from '../..';
 import {
   createRestAppClient,
   givenHttpServerConfig,
@@ -23,7 +23,7 @@ export async function setupApplication(): Promise<AppWithClient> {
 
   const client = createRestAppClient(app);
 
-  return {app, client};
+  return { app, client };
 }
 
 export interface AppWithClient {
