@@ -14,12 +14,22 @@ describe('MembersController', () => {
     await app.stop();
   });
 
-  it('invokes GET /members', async () => {
-    const res = await client.get('/members').expect(200);
-    expect(res.body).to.be.an.Array();
+  it('invokes GET /members', (done: Mocha.Done) => {
+    client
+      .get('/members')
+      .expect(200)
+      .then(res => {
+        expect(res.body).to.be.an.Array();
+        done();
+      })
+      .catch(done);
   });
 
-  it('invokes GET /members/:id with 404 error', async () => {
-    await client.get('/members/dummy').expect(404);
+  it('invokes GET /members/:id with 404 error', (done: Mocha.Done) => {
+    client
+      .get('/members/dummy')
+      .expect(404)
+      .then(() => done())
+      .catch(done);
   });
 });
