@@ -22,8 +22,7 @@ describe('MembersController', () => {
         expect(res.body).to.be.an.Array();
         done();
       })
-      .catch(done)
-    ;
+      .catch(done);
   });
 
   it('invokes GET /members/:id with 404 error', (done: Mocha.Done) => {
@@ -31,7 +30,6 @@ describe('MembersController', () => {
       .get('/members/dummy')
       .expect(404)
       .then(() => done())
-      .catch(done)
-    ;
+      .catch(done);
   });
 });
