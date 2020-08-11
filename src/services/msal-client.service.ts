@@ -2,9 +2,9 @@ import { bind, BindingScope, Provider, config } from '@loopback/core';
 import { ConfidentialClientApplication } from '@azure/msal-node';
 
 export type MsalClientOptions = {
-  clientId: string,
-  clientSecret: string,
-  authority: string,
+  clientId: string;
+  clientSecret: string;
+  authority: string;
 };
 
 export type MsalClientService = ConfidentialClientApplication;
@@ -18,8 +18,7 @@ export class MsalClientServiceProvider implements Provider<MsalClientService> {
       clientSecret: process.env['MSAL_CLIENT_SECRET'] ?? '',
       authority: process.env['MSAL_AUTHORITY'] ?? '',
     },
-  ) {
-  }
+  ) {}
 
   value(): MsalClientService {
     return new ConfidentialClientApplication({
