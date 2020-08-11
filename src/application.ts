@@ -9,6 +9,8 @@ import { RestApplication } from '@loopback/rest';
 import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
 import { MySequence } from './sequence';
+import { AuthenticationComponent } from '@loopback/authentication';
+import { JWTAuthenticationComponent } from '@loopback/authentication-jwt';
 
 export { ApplicationConfig };
 
@@ -29,6 +31,9 @@ export class UdonApiApplication extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
