@@ -1,6 +1,8 @@
 # Check out https://hub.docker.com/_/node to select a new base image
 FROM node:14-slim
 
+ARG PACKAGE_TOKEN
+
 # Set to a non-root built-in user `node`
 USER node
 
@@ -13,8 +15,11 @@ WORKDIR /home/node/app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 COPY --chown=node package*.json ./
+COPY --chown=node .npmrc ./
 
-RUN npm install
+RUN echo "//npm.pkg.github.com/:_authToken=${PACKAGE_TOKEN}" >> ~/.npmrc && \
+    npm install && \
+    rm -f ~/.npmrc
 
 # Bundle app source code
 COPY --chown=node . .
