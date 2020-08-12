@@ -55,19 +55,21 @@
     "@loopback/rest-explorer": "^2.2.8",
     "@loopback/security": "^0.2.16",
     "@loopback/service-proxy": "^2.3.6",
-    "@nittc-computerclub/udon-common": "^0.1.0",
+    "@nittc-computerclub/udon-common": "^0.2.0",
     "@types/js-yaml": "^3.12.5",
     "loopback-connector-mysql": "^5.4.4",
     "loopback-connector-rest": "^3.7.0",
+    "node-fetch": "^2.6.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@loopback/build": "^6.2.0",
-    "source-map-support": "^0.5.19",
+    "@loopback/eslint-config": "^9.0.0",
     "@loopback/testlab": "^3.2.2",
     "@types/node": "^10.17.28",
-    "@loopback/eslint-config": "^9.0.0",
+    "@types/node-fetch": "^2.5.7",
     "eslint": "^7.6.0",
+    "source-map-support": "^0.5.19",
     "typescript": "~3.9.7"
   }
 }
