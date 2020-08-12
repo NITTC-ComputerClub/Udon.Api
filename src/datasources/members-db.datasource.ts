@@ -1,17 +1,20 @@
 import { inject, lifeCycleObserver, LifeCycleObserver } from '@loopback/core';
 import { juggler } from '@loopback/repository';
 
-const baseUrl = 'https://members-db.azurewebsites.net/';
 const config = {
   name: 'members_db',
   connector: 'rest',
-  baseURL: baseUrl,
   crud: false,
   operations: [
     {
       template: {
         method: 'GET',
-        url: baseUrl,
+        url: process.env['MEMBERS_DB_URL'],
+        headers: {
+          accept: 'application/vnd.github.v3.raw',
+          authorization: `Token ${process.env['MEMBERS_DB_TOKEN']}`,
+          'user-agent': 'udon-api',
+        },
       },
       functions: {
         getMembers: [],
