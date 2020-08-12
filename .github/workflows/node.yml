@@ -34,3 +34,6 @@ jobs:
       - run: npm run lint
       - run: npm run migrate
       - run: npm test
+        env:
+          MEMBERS_DB_URL: https://api.github.com/repos/nittc-computerclub/members-db-dist/contents/members.json
+          MEMBERS_DB_TOKEN: ${{ secrets.MEMBERS_DB_TOKEN }}
