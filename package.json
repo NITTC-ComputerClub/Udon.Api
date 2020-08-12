@@ -55,7 +55,7 @@
     "@loopback/rest-explorer": "^2.2.8",
     "@loopback/security": "^0.2.16",
     "@loopback/service-proxy": "^2.3.6",
-    "@nittc-computerclub/udon-common": "^0.1.0",
+    "@nittc-computerclub/udon-common": "^0.2.0",
     "@types/js-yaml": "^3.12.5",
     "loopback-connector-mysql": "^5.4.4",
     "loopback-connector-rest": "^3.7.0",
