@@ -1,24 +1,31 @@
-import { getService } from '@loopback/service-proxy';
-import { inject, Provider } from '@loopback/core';
+import { Provider } from '@loopback/core';
 import { Member } from '@nittc-computerclub/udon-common/models/member';
-import { MembersDbDataSource } from '../datasources';
 
-export interface MembersFetcherService {
-  // this is where you define the Node.js methods that will be
-  // mapped to REST/SOAP/gRPC operations as stated in the datasource
-  // json file.
-  getMembers(): Promise<Member[]>;
+import fetch from 'node-fetch';
+
+export class MembersFetcherService {
+  getMembers(): Promise<Member[]> {
+    return fetch(
+      process.env['MEMBERS_DB_URL'] ?? '',
+      {
+        headers: {
+          accept: 'application/vnd.github.raw+json',
+          authorization: `Token ${process.env['MEMBERS_DB_TOKEN']}`,
+          'user-agent': 'udon-api',
+        },
+      },
+    )
+      .then(response => response.json())
+    ;
+  }
 }
 
 export class MembersFetcherServiceProvider
   implements Provider<MembersFetcherService> {
   constructor(
-    // members_db must match the name property in the datasource json file
-    @inject('datasources.members_db')
-    protected dataSource: MembersDbDataSource = new MembersDbDataSource(),
   ) {}
 
-  value(): Promise<MembersFetcherService> {
-    return getService(this.dataSource);
+  async value(): Promise<MembersFetcherService> {
+    return new MembersFetcherService();
   }
 }
