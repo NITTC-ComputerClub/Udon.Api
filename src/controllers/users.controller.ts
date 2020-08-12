@@ -5,13 +5,14 @@ import {
   param,
   post,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
 import { inject } from '@loopback/core';
 import { authenticate, TokenService } from '@loopback/authentication';
 import { TokenServiceBindings } from '@loopback/authentication-jwt';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { Entity, model, property } from '@loopback/repository';
-import { MsalClientService } from '../services';
+import { MembersFetcherService, MsalClientService } from '../services';
 
 @model()
 export class TokenRequest extends Entity {
@@ -28,6 +29,8 @@ export class UsersController {
     public jwtService: TokenService,
     @inject('services.MsalClientService')
     private msalClientService: MsalClientService,
+    @inject('services.MembersFetcherService')
+    protected membersFetcherService: MembersFetcherService,
   ) {}
 
   @get('/users/authenticate', {
@@ -94,12 +97,18 @@ export class UsersController {
       scopes: [],
     });
 
-    console.log(response.account.username);
+    const members = await this.membersFetcherService.getMembers();
+    const member = members.find(
+      m => m.contacts.office365 === response.uniqueId,
+    );
+    if (!member) {
+      throw new HttpErrors.Forbidden();
+    }
 
     return {
       token: await this.jwtService.generateToken({
-        [securityId]: response.uniqueId,
-        name: response.idTokenClaims['name'],
+        [securityId]: member.id,
+        name: member.name,
         email: response.account.username,
       }),
     };
