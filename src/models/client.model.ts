@@ -1,5 +1,6 @@
 import { Entity, model, property } from '@loopback/repository';
 import { Client as IClient } from '@nittc-computerclub/udon-common/models/client';
+import cryptoRandomString from 'crypto-random-string';
 
 @model()
 export class Client extends Entity implements IClient {
@@ -25,6 +26,15 @@ export class Client extends Entity implements IClient {
 
   constructor(data?: Partial<Client>) {
     super(data);
+  }
+
+  static create(name: string): Client {
+    return new Client({
+      name,
+      secret: cryptoRandomString({
+        length: 64,
+      }),
+    });
   }
 }
 
