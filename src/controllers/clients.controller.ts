@@ -1,45 +1,44 @@
-import { Filter, FilterExcludingWhere, repository } from '@loopback/repository';
 import {
-  post,
+  Entity,
+  Filter,
+  FilterExcludingWhere,
+  model,
+  property,
+  repository,
+} from '@loopback/repository';
+import {
   param,
   get,
   getModelSchemaRef,
-  patch,
-  del,
+  post,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
 import { Client } from '../models';
-import { ClientRepository } from '../repositories';
+import { ClientRepository, SessionRepository } from '../repositories';
+import { inject } from '@loopback/core';
+import { securityId } from '@loopback/security';
+import { TokenServiceBindings } from '@loopback/authentication-jwt';
+import { TokenService } from '@loopback/authentication';
+
+@model()
+class ClientTokenRequest extends Entity {
+  @property({ type: 'string', required: true })
+  clientId: string;
+
+  @property({ type: 'string', required: true })
+  clientSecret: string;
+}
 
 export class ClientsController {
   constructor(
     @repository(ClientRepository)
     public clientRepository: ClientRepository,
+    @repository(SessionRepository)
+    public sessionRepository: SessionRepository,
+    @inject(TokenServiceBindings.TOKEN_SERVICE)
+    public jwtService: TokenService,
   ) {}
-
-  @post('/clients', {
-    responses: {
-      '200': {
-        description: 'Client model instance',
-        content: { 'application/json': { schema: getModelSchemaRef(Client) } },
-      },
-    },
-  })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Client, {
-            title: 'NewClient',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    client: Omit<Client, 'id'>,
-  ): Promise<Client> {
-    return this.clientRepository.create(client);
-  }
 
   @get('/clients', {
     responses: {
@@ -80,35 +79,29 @@ export class ClientsController {
     return this.clientRepository.findById(id, filter);
   }
 
-  @patch('/clients/{id}', {
-    responses: {
-      '204': {
-        description: 'Client PATCH success',
+  @post('/clients/token')
+  async clientToken(
+    @requestBody() tokenRequest: ClientTokenRequest,
+  ): Promise<{ token: string }> {
+    const client = await this.clientRepository.findOne({
+      where: {
+        id: tokenRequest.clientId,
+        secret: tokenRequest.clientSecret,
       },
-    },
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Client, { partial: true }),
-        },
-      },
-    })
-    client: Client,
-  ): Promise<void> {
-    await this.clientRepository.updateById(id, client);
-  }
+    });
 
-  @del('/clients/{id}', {
-    responses: {
-      '204': {
-        description: 'Client DELETE success',
-      },
-    },
-  })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.clientRepository.deleteById(id);
+    if (client === null) {
+      throw new HttpErrors.Unauthorized('Invalid credentials.');
+    }
+
+    const session = await this.sessionRepository.create({
+      clientId: client.id,
+    });
+
+    return {
+      token: await this.jwtService.generateToken({
+        [securityId]: session.id,
+      }),
+    };
   }
 }

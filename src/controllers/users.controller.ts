@@ -11,11 +11,19 @@ import { inject } from '@loopback/core';
 import { authenticate, TokenService } from '@loopback/authentication';
 import { TokenServiceBindings } from '@loopback/authentication-jwt';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, model, property, repository } from '@loopback/repository';
+import { Member } from '@nittc-computerclub/udon-common/models/member';
 import { MembersFetcherService, MsalClientService } from '../services';
+import { ClientRepository, SessionRepository } from '../repositories';
 
 @model()
-export class TokenRequest extends Entity {
+class TokenRequest extends Entity {
+  @property({ type: 'string', required: true })
+  clientId: string;
+
+  @property({ type: 'string', required: true })
+  clientSecret: string;
+
   @property({ type: 'string', required: true })
   redirectUri: string;
 
@@ -31,6 +39,10 @@ export class UsersController {
     private msalClientService: MsalClientService,
     @inject('services.MembersFetcherService')
     protected membersFetcherService: MembersFetcherService,
+    @repository(ClientRepository)
+    public clientRepository: ClientRepository,
+    @repository(SessionRepository)
+    public sessionRepository: SessionRepository,
   ) {}
 
   @get('/users/authenticate', {
@@ -105,11 +117,25 @@ export class UsersController {
       throw new HttpErrors.Forbidden();
     }
 
+    const client = await this.clientRepository.findOne({
+      where: {
+        id: tokenRequest.clientId,
+        secret: tokenRequest.clientSecret,
+      },
+    });
+
+    if (!client) {
+      throw new HttpErrors.Unauthorized('Invalid credentials.');
+    }
+
+    const session = await this.sessionRepository.create({
+      member: member,
+      clientId: client.id,
+    });
+
     return {
       token: await this.jwtService.generateToken({
-        [securityId]: member.id,
-        name: member.name,
-        email: response.account.username,
+        [securityId]: session.id,
       }),
     };
   }
@@ -127,7 +153,15 @@ export class UsersController {
   })
   async whoami(
     @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
-  ): Promise<UserProfile> {
-    return currentUserProfile;
+  ): Promise<Member> {
+    const session = await this.sessionRepository.findById(
+      currentUserProfile[securityId],
+    );
+
+    if (!session.member) {
+      throw new HttpErrors.NotFound('The session is created without user.');
+    }
+
+    return session.member;
   }
 }
