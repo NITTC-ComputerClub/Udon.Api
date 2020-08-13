@@ -4,13 +4,15 @@ import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import { RepositoryMixin } from '@loopback/repository';
+import { RepositoryMixin, SchemaMigrationOptions } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
 import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
 import { MySequence } from './sequence';
 import { AuthenticationComponent } from '@loopback/authentication';
 import { JWTAuthenticationComponent } from '@loopback/authentication-jwt';
+import { ClientRepository } from './repositories';
+import { Client } from './models';
 
 export { ApplicationConfig };
 
@@ -45,5 +47,22 @@ export class UdonApiApplication extends BootMixin(
         nested: true,
       },
     };
+  }
+
+  async migrateSchema(options?: SchemaMigrationOptions) {
+    await super.migrateSchema(options);
+
+    const clientRepository = await this.getRepository(ClientRepository);
+
+    if ((await clientRepository.count()).count === 0) {
+      const names = ['Udon.Client.Web', 'Udon.Client.Nfc'];
+      const clients = names.map(Client.create);
+
+      for (const client of clients) {
+        console.log(`${client.name}: ${client.secret}`);
+      }
+
+      await clientRepository.createAll(clients);
+    }
   }
 }
