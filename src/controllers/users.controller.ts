@@ -125,9 +125,7 @@ export class UsersController {
     });
 
     if (!client) {
-      throw new HttpErrors.Unauthorized(
-        'Invalid credentials.'
-      );
+      throw new HttpErrors.Unauthorized('Invalid credentials.');
     }
 
     const session = await this.sessionRepository.create({
