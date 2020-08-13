@@ -7,26 +7,12 @@ describe('ClientsController', () => {
   let app: UdonApiApplication;
   let client: Client;
 
-  let id: string | undefined;
-  let name = 'foo';
-
   before('setupApplication', async () => {
     ({ app, client } = await setupApplication());
   });
 
   after(async () => {
     await app.stop();
-  });
-
-  it('invokes POST /clients', async () => {
-    const res = await client.post('/clients').send({ name }).expect(200);
-    const c = res.body as IClient;
-
-    expect(c).to.be.an.Object();
-    expect(c.id).to.be.a.String();
-    expect(c.name).to.be.eql(name);
-
-    id = c.id;
   });
 
   it('invokes GET /clients', async () => {
@@ -39,21 +25,6 @@ describe('ClientsController', () => {
       expect(c.id).to.be.lengthOf(36);
       expect(c.name).to.be.a.String();
     });
-  });
-
-  it('invokes PATCH /clients/:id', async () => {
-    name = 'bar';
-
-    await client.patch(`/clients/${id}`).send({ name }).expect(204);
-  });
-
-  it('invokes GET /clients/:id', async () => {
-    const res = await client.get(`/clients/${id}`).expect(200);
-    const c = res.body as IClient;
-
-    expect(c).to.be.an.Object();
-    expect(c.id).to.be.eql(id);
-    expect(c.name).to.be.eql(name);
   });
 
   it('invokes GET /clients/:id with 404 error', async () => {
