@@ -33,6 +33,7 @@ export class Client extends Entity implements IClient {
       name,
       secret: cryptoRandomString({
         length: 64,
+        type: 'url-safe',
       }),
     });
   }
