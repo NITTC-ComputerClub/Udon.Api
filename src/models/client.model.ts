@@ -4,9 +4,7 @@ import cryptoRandomString from 'crypto-random-string';
 
 @model({
   settings: {
-    hiddenProperties: [
-      'secret',
-    ],
+    hiddenProperties: ['secret'],
   },
 })
 export class Client extends Entity implements IClient {
