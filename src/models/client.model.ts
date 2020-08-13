@@ -2,7 +2,13 @@ import { Entity, model, property } from '@loopback/repository';
 import { Client as IClient } from '@nittc-computerclub/udon-common/models/client';
 import cryptoRandomString from 'crypto-random-string';
 
-@model()
+@model({
+  settings: {
+    hiddenProperties: [
+      'secret',
+    ],
+  },
+})
 export class Client extends Entity implements IClient {
   @property({
     type: 'string',
