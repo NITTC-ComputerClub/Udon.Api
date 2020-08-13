@@ -17,6 +17,12 @@ export class Client extends Entity implements IClient {
   })
   name: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  secret: string;
+
   constructor(data?: Partial<Client>) {
     super(data);
   }
