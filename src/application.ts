@@ -57,7 +57,7 @@ export class UdonApiApplication extends BootMixin(
     if ((await clientRepository.count()).count === 0) {
       const names = ['Udon.Client.Web', 'Udon.Client.Nfc'];
       const clients = await clientRepository.createAll(
-        names.map(Client.create)
+        names.map(Client.create),
       );
 
       for (const client of clients) {
