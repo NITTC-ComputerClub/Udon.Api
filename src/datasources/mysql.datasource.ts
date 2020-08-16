@@ -4,11 +4,11 @@ import { juggler } from '@loopback/repository';
 const config = {
   name: 'mysql',
   connector: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  user: 'udon',
-  password: 'udon',
-  database: 'udon',
+  host: process.env['MYSQL_HOST'] ?? 'localhost',
+  port: process.env['MYSQL_PORT'] ?? 3306,
+  user: process.env['MYSQL_USER'] ?? 'udon',
+  password: process.env['MYSQL_PASSWORD'] ?? 'udon',
+  database: process.env['MYSQL_DATABASE'] ?? 'udon',
 };
 
 // Observe application's life cycle to disconnect the datasource when
