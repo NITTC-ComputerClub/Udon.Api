@@ -1,6 +1,6 @@
 {
   "name": "@nittc-computerclub/udon-api",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Web APIs backend for Udon.",
   "author": "Naoki Ikeguchi <root@siketyan.dev>",
   "license": "MIT",
