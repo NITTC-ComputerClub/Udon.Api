@@ -2,9 +2,11 @@ import { get } from '@loopback/rest';
 import { inject } from '@loopback/core';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { authenticate } from '@loopback/authentication';
+import { authorize } from '@loopback/authorization';
 import { Session } from '../models';
 import { repository } from '@loopback/repository';
 import { SessionRepository } from '../repositories';
+import { Roles } from '../security/roles';
 
 export class SessionsController {
   constructor(
@@ -13,6 +15,7 @@ export class SessionsController {
   ) {}
 
   @authenticate('jwt')
+  @authorize({ allowedRoles: [Roles.user, Roles.client] })
   @get('/sessions/now', {
     responses: {
       '200': {
@@ -30,6 +33,16 @@ export class SessionsController {
       include: [
         {
           relation: 'client',
+        },
+        {
+          relation: 'user',
+          scope: {
+            include: [
+              {
+                relation: 'member',
+              },
+            ],
+          },
         },
       ],
     });

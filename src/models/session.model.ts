@@ -1,10 +1,10 @@
 import { belongsTo, Entity, model, property } from '@loopback/repository';
-import { Member } from '@nittc-computerclub/udon-common/models/member';
 import { Client, ClientWithRelations } from './client.model';
+import { User, UserWithRelations } from './user.model';
 
 @model({
   settings: {
-    hiddenProperties: ['clientId'],
+    hiddenProperties: ['userId', 'clientId'],
   },
 })
 export class Session extends Entity {
@@ -16,11 +16,8 @@ export class Session extends Entity {
   })
   id: string;
 
-  @property({
-    type: 'object',
-    required: false,
-  })
-  member?: Member;
+  @belongsTo(() => User, { name: 'user' })
+  userId?: string;
 
   @belongsTo(() => Client, { name: 'client' })
   clientId: string;
@@ -31,6 +28,7 @@ export class Session extends Entity {
 }
 
 export interface SessionRelations {
+  user?: UserWithRelations;
   client: ClientWithRelations;
 }
 

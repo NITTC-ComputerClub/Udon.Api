@@ -1,6 +1,7 @@
 import { Entity, model, property } from '@loopback/repository';
 import { Client as IClient } from '@nittc-computerclub/udon-common/models/client';
 import cryptoRandomString from 'crypto-random-string';
+import { Roles } from '../security/roles';
 
 @model({
   settings: {
@@ -27,6 +28,13 @@ export class Client extends Entity implements IClient {
     required: true,
   })
   secret: string;
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+    default: [Roles.client],
+  })
+  roles: string[];
 
   constructor(data?: Partial<Client>) {
     super(data);
