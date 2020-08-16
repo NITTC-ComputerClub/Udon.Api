@@ -1,5 +1,7 @@
 import { Request, RestBindings, get, ResponseObject } from '@loopback/rest';
 import { inject } from '@loopback/core';
+import { authenticate } from '@loopback/authentication';
+import { authorize } from '@loopback/authorization';
 
 /**
  * OpenAPI response for ping()
@@ -35,6 +37,8 @@ export class PingController {
   constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
 
   // Map to `GET /ping`
+  @authenticate('jwt')
+  @authorize({ allowedRoles: ['ROLE_USER', 'ROLE_CLIENT'] })
   @get('/ping', {
     responses: {
       '200': PING_RESPONSE,

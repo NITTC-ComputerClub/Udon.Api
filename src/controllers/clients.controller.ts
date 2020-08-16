@@ -19,7 +19,8 @@ import { ClientRepository, SessionRepository } from '../repositories';
 import { inject } from '@loopback/core';
 import { securityId } from '@loopback/security';
 import { TokenServiceBindings } from '@loopback/authentication-jwt';
-import { TokenService } from '@loopback/authentication';
+import { authenticate, TokenService } from '@loopback/authentication';
+import { authorize } from '@loopback/authorization';
 
 @model()
 class ClientTokenRequest extends Entity {
@@ -40,6 +41,8 @@ export class ClientsController {
     public jwtService: TokenService,
   ) {}
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: ['ROLE_USER', 'ROLE_CLIENT'] })
   @get('/clients', {
     responses: {
       '200': {
@@ -59,6 +62,8 @@ export class ClientsController {
     return this.clientRepository.find(filter);
   }
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: ['ROLE_USER', 'ROLE_CLIENT'] })
   @get('/clients/{id}', {
     responses: {
       '200': {
