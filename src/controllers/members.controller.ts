@@ -2,6 +2,8 @@ import { get, HttpErrors, param } from '@loopback/rest';
 import { inject } from '@loopback/core';
 import { Member } from '@nittc-computerclub/udon-common/models/member';
 import { MembersFetcherService } from '../services';
+import { authenticate } from '@loopback/authentication';
+import { authorize } from '@loopback/authorization';
 
 const MEMBER_RESPONSE = {
   type: 'object',
@@ -18,6 +20,8 @@ export class MembersController {
     protected membersFetcherService: MembersFetcherService,
   ) {}
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: ['ROLE_USER'] })
   @get('/members', {
     responses: {
       '200': {
@@ -37,6 +41,8 @@ export class MembersController {
     return this.membersFetcherService.getMembers();
   }
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: ['ROLE_USER'] })
   @get('/members/{id}', {
     parameters: [
       {
