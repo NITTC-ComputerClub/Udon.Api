@@ -3,7 +3,7 @@ import { Client as IClient } from '@nittc-computerclub/udon-common/models/client
 import { UdonApiApplication } from '../..';
 import { setupApplication } from './test-helper';
 
-describe('ClientsController', () => {
+xdescribe('ClientsController', () => {
   let app: UdonApiApplication;
   let client: Client;
 

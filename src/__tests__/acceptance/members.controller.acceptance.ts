@@ -2,7 +2,7 @@ import { Client, expect } from '@loopback/testlab';
 import { UdonApiApplication } from '../..';
 import { setupApplication } from './test-helper';
 
-describe('MembersController', () => {
+xdescribe('MembersController', () => {
   let app: UdonApiApplication;
   let client: Client;
 
