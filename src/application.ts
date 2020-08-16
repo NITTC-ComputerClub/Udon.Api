@@ -11,8 +11,17 @@ import path from 'path';
 import { MySequence } from './sequence';
 import { AuthenticationComponent } from '@loopback/authentication';
 import { JWTAuthenticationComponent } from '@loopback/authentication-jwt';
+import {
+  AuthorizationBindings,
+  AuthorizationComponent,
+  AuthorizationDecision,
+  AuthorizationOptions,
+  AuthorizationTags,
+} from '@loopback/authorization';
 import { ClientRepository } from './repositories';
 import { Client } from './models';
+import { SessionProvider } from './security/session.provider';
+import { AuthorizerProvider } from './security/authorizer';
 
 export { ApplicationConfig };
 
@@ -36,6 +45,17 @@ export class UdonApiApplication extends BootMixin(
 
     this.component(AuthenticationComponent);
     this.component(JWTAuthenticationComponent);
+
+    this.configure(AuthorizationBindings.COMPONENT).to({
+      precedence: AuthorizationDecision.DENY,
+      defaultDecision: AuthorizationDecision.DENY,
+    } as AuthorizationOptions);
+    this.component(AuthorizationComponent);
+
+    this.bind('session').toProvider(SessionProvider);
+    this.bind('authorizer')
+      .toProvider(AuthorizerProvider)
+      .tag(AuthorizationTags.AUTHORIZER);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
