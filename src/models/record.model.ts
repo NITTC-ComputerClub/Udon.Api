@@ -1,4 +1,6 @@
-import { Entity, model, property } from '@loopback/repository';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { Member } from './member.model';
+import { Client } from './client.model';
 
 @model()
 export class Record extends Entity {
@@ -10,16 +12,10 @@ export class Record extends Entity {
   })
   id: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
+  @belongsTo(() => Member, { name: 'member' })
   memberId: string;
 
-  @property({
-    type: 'string',
-    required: true,
-  })
+  @belongsTo(() => Client, { name: 'client' })
   clientId: string;
 
   @property({
@@ -35,7 +31,8 @@ export class Record extends Entity {
 }
 
 export interface RecordRelations {
-  // describe navigational properties here
+  member: Member;
+  client: Client;
 }
 
 export type RecordWithRelations = Record & RecordRelations;
