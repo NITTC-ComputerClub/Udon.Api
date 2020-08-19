@@ -9,6 +9,9 @@ import {
 } from '@loopback/rest';
 import { Record } from '../models';
 import { RecordRepository } from '../repositories';
+import { authenticate } from '@loopback/authentication';
+import { authorize } from '@loopback/authorization';
+import { Roles } from '../security/roles';
 
 export class RecordsController {
   constructor(
@@ -16,6 +19,8 @@ export class RecordsController {
     public recordRepository: RecordRepository,
   ) {}
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: [Roles.user] })
   @post('/records', {
     responses: {
       '200': {
@@ -40,6 +45,8 @@ export class RecordsController {
     return this.recordRepository.create(record);
   }
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: [Roles.user] })
   @get('/records', {
     responses: {
       '200': {
@@ -59,6 +66,8 @@ export class RecordsController {
     return this.recordRepository.find(filter);
   }
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: [Roles.user] })
   @get('/records/{id}', {
     responses: {
       '200': {
@@ -79,6 +88,8 @@ export class RecordsController {
     return this.recordRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
+  @authorize({ allowedRoles: [Roles.user] })
   @del('/records/{id}', {
     responses: {
       '204': {
