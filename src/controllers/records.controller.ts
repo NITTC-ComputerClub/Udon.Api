@@ -6,17 +6,24 @@ import {
   getModelSchemaRef,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
-import { Record } from '../models';
-import { RecordRepository } from '../repositories';
+import { Record, SessionWithRelations } from '../models';
+import { RecordRepository, SessionRepository } from '../repositories';
 import { authenticate } from '@loopback/authentication';
 import { authorize } from '@loopback/authorization';
 import { Roles } from '../security/roles';
+import { inject } from '@loopback/core';
+import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 
 export class RecordsController {
   constructor(
     @repository(RecordRepository)
     public recordRepository: RecordRepository,
+    @repository(SessionRepository)
+    private sessionRepository: SessionRepository,
+    @inject(SecurityBindings.USER)
+    private currentUserProfile: UserProfile,
   ) {}
 
   @authenticate('jwt')
@@ -63,7 +70,13 @@ export class RecordsController {
     },
   })
   async find(@param.filter(Record) filter?: Filter<Record>): Promise<Record[]> {
-    return this.recordRepository.find(filter);
+    return this.recordRepository.find({
+      ...filter,
+      where: {
+        ...filter?.where,
+        memberId: (await this.getCurrentSession()).user?.member.id,
+      },
+    });
   }
 
   @authenticate('jwt')
@@ -85,7 +98,19 @@ export class RecordsController {
     @param.filter(Record, { exclude: 'where' })
     filter?: FilterExcludingWhere<Record>,
   ): Promise<Record> {
-    return this.recordRepository.findById(id, filter);
+    const record = await this.recordRepository.findOne({
+      ...filter,
+      where: {
+        id,
+        memberId: (await this.getCurrentSession()).user?.member.id,
+      },
+    });
+
+    if (!record) {
+      throw new HttpErrors.NotFound('No record with the ID found.');
+    }
+
+    return record;
   }
 
   @authenticate('jwt')
@@ -98,6 +123,37 @@ export class RecordsController {
     },
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
+    if (
+      (await this.findById(id)).memberId ===
+      (await this.getCurrentSession()).user?.member.id
+    ) {
+      throw new HttpErrors.Forbidden(
+        'You can not delete the record which is created by others.',
+      );
+    }
     await this.recordRepository.deleteById(id);
+  }
+
+  private getCurrentSession(): Promise<SessionWithRelations> {
+    return this.sessionRepository.findById(
+      this.currentUserProfile[securityId],
+      {
+        include: [
+          {
+            relation: 'client',
+          },
+          {
+            relation: 'user',
+            scope: {
+              include: [
+                {
+                  relation: 'member',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    );
   }
 }
