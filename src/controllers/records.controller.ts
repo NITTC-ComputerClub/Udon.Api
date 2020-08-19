@@ -49,7 +49,12 @@ export class RecordsController {
     })
     record: Omit<Record, 'id'>,
   ): Promise<Record> {
-    return this.recordRepository.create(record);
+    const session = await this.getCurrentSession();
+
+    return this.recordRepository.create({
+      memberId: session.user?.member.id,
+      clientId: session.client.id,
+    });
   }
 
   @authenticate('jwt')
